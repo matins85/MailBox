@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="base" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./src/assets/react.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mail Box</title>
+
+    <!-- Theme Check and Update -->
+    <script>
+      // This code prevents page load glitches related to theme switching
+      const html = document.querySelector("html");
+      const isLightOrAuto =
+        localStorage.getItem("hs_theme") === "light" ||
+        (localStorage.getItem("hs_theme") === "auto" &&
+          !window.matchMedia("(prefers-color-scheme: dark)").matches);
+      const isDarkOrAuto =
+        localStorage.getItem("hs_theme") === "dark" ||
+        (localStorage.getItem("hs_theme") === "auto" &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+      if (isLightOrAuto && html.classList.contains("dark"))
+        html.classList.remove("dark");
+      else if (isDarkOrAuto && html.classList.contains("light"))
+        html.classList.remove("light");
+      else if (isDarkOrAuto && !html.classList.contains("dark"))
+        html.classList.add("dark");
+      else if (isLightOrAuto && !html.classList.contains("light"))
+        html.classList.add("light");
+      else html.classList.add("dark");
+    </script>
+  </head>
+
+  <body
+    class="bg-background overflow-x-hidden font-inter text-sm font-normal selection:bg-primary selection:text-primary-foreground"
+  >
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

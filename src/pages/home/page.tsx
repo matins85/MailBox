@@ -2,7 +2,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { mailRoute } from "@/utils/routes";
 import { useNavigate } from "react-router-dom";
 
-export default function Home() {
+export default function HomePage() {
   const navigate = useNavigate();
 
   return (

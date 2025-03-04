@@ -8,9 +8,9 @@ import {
 import Loading from "./components/Loading";
 import { homeRoute, mailRoute, notFoundRoute } from "./utils/routes";
 
-const Home = lazy(() => import("./pages/home/Home"));
+const Home = lazy(() => import("./pages/home/page"));
 const Mail = lazy(() => import("./pages/mail/page"));
-const NotFound = lazy(() => import("./pages/404/NotFound"));
+const NotFound = lazy(() => import("./pages/404/page"));
 
 export default function App() {
   return (

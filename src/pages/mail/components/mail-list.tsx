@@ -8,9 +8,10 @@ import { useMail } from "../use-mail";
 
 interface MailListProps {
   items: Mail[];
+  showMailContent: () => void;
 }
 
-export function MailList({ items }: MailListProps) {
+export function MailList({ items, showMailContent }: MailListProps) {
   const [mail, setMail] = useMail();
 
   return (
@@ -20,15 +21,16 @@ export function MailList({ items }: MailListProps) {
           <button
             key={item.id}
             className={cn(
-              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent dark:border-primary-foreground",
+              "cursor-pointer flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent dark:border-primary-foreground",
               mail.selected === item.id && "bg-muted"
             )}
-            onClick={() =>
+            onClick={() => {
               setMail({
                 ...mail,
                 selected: item.id,
-              })
-            }
+              });
+              showMailContent();
+            }}
           >
             <div className="flex w-full flex-col gap-1">
               <div className="flex items-center">

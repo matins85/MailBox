@@ -2,6 +2,7 @@ import { addDays, addHours, format, nextSaturday } from "date-fns";
 import {
   Archive,
   ArchiveX,
+  ChevronLeft,
   Clock,
   Forward,
   MoreVertical,
@@ -37,15 +38,25 @@ import { type Mail } from "../data";
 
 interface MailDisplayProps {
   mail: Mail | null;
+  hideMailList: () => void;
 }
 
-export function MailDisplay({ mail }: MailDisplayProps) {
+export function MailDisplay({ mail, hideMailList }: MailDisplayProps) {
   const today = new Date();
 
   return (
     <div className="flex h-full flex-col text-foreground">
       <div className="flex items-center p-2">
         <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={hideMailList} variant="ghost" disabled={!mail}>
+                <ChevronLeft /> Back
+                <span className="sr-only">Back</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Back</TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" disabled={!mail}>

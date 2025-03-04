@@ -1,4 +1,8 @@
-export default function NotFound() {
+import { useNavigate } from "react-router-dom";
+
+export default function NotFoundPage() {
+  const navigate = useNavigate();
+
   return (
     <>
       <div className="h-screen flex justify-center">
@@ -31,8 +35,8 @@ export default function NotFound() {
               </p>
               <div className="mt-5 flex flex-col justify-center items-center gap-2 sm:flex-row sm:gap-3">
                 <a
-                  className="w-full sm:w-auto py-2 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                  href=""
+                  className="cursor-pointer w-full sm:w-auto py-2 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                  onClick={() => navigate(-1)}
                 >
                   <svg
                     className="shrink-0 size-4"
@@ -48,7 +52,7 @@ export default function NotFound() {
                   >
                     <path d="m15 18-6-6 6-6" />
                   </svg>
-                  Back
+                  Go Back
                 </a>
               </div>
             </div>
@@ -59,7 +63,7 @@ export default function NotFound() {
           <footer className="mt-auto text-center py-5">
             <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
               <p className="text-sm text-gray-500 dark:text-neutral-500">
-                © All Rights Reserved. 2022.
+                © All Rights Reserved. 2025.
               </p>
             </div>
           </footer>

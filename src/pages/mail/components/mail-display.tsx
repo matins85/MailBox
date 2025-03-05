@@ -1,16 +1,3 @@
-import { addDays, addHours, format, nextSaturday } from "date-fns";
-import {
-  Archive,
-  ArchiveX,
-  ChevronLeft,
-  Clock,
-  Forward,
-  MoreVertical,
-  Reply,
-  ReplyAll,
-  Trash2,
-} from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -35,6 +22,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Message } from "@/utils/interface";
+import { addDays, addHours, format, nextSaturday } from "date-fns";
+import {
+  Archive,
+  ArchiveX,
+  ChevronLeft,
+  Clock,
+  Forward,
+  MoreVertical,
+  Reply,
+  ReplyAll,
+  Trash2,
+} from "lucide-react";
 
 interface MailDisplayProps {
   mail: Message | null | undefined;

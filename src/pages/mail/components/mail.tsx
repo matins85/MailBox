@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { fetchItems } from "@/utils/api";
 import { ApiResponse, Message } from "@/utils/interface";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
   Archive,
@@ -27,14 +27,12 @@ import {
   Users2,
 } from "lucide-react";
 import * as React from "react";
-import { type Mail } from "../data";
 import { useMail } from "../use-mail";
 import { MailDisplay } from "./mail-display";
 import { MailList } from "./mail-list";
 import { Nav } from "./nav";
 
 interface MailProps {
-  mails: Mail[];
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
   navCollapsedSize: number;
@@ -56,12 +54,6 @@ export function Mail({
 
   const [messages, setMessages] = React.useState<Message[]>();
 
-  const queryClient = useQueryClient();
-
-  React.useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["user-message"] });
-  }, [queryClient]);
-
   const { data, isLoading, error, refetch } = useQuery<ApiResponse>({
     queryKey: ["user-messages"],
     queryFn: () => fetchItems("messages/user-messages"),
@@ -71,7 +63,6 @@ export function Mail({
 
   React.useEffect(() => {
     if (data?.success && data?.data?.messages) {
-      console.log(data, "messages");
       setMessages(data.data.messages);
     }
   }, [data]);

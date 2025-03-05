@@ -1,3 +1,18 @@
+import Error from "@/components/Error";
+import { Input } from "@/components/ui/input";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { fetchItems } from "@/utils/api";
+import { ApiResponse, Message } from "@/utils/interface";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
   Archive,
@@ -12,30 +27,13 @@ import {
   Users2,
 } from "lucide-react";
 import * as React from "react";
-
-import { Input } from "@/components/ui/input";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import { type Mail } from "../data";
 import { useMail } from "../use-mail";
-import { AccountSwitcher } from "./account-switcher";
 import { MailDisplay } from "./mail-display";
 import { MailList } from "./mail-list";
 import { Nav } from "./nav";
 
 interface MailProps {
-  accounts: {
-    label: string;
-    email: string;
-    icon: React.ReactNode;
-  }[];
   mails: Mail[];
   defaultLayout: number[] | undefined;
   defaultCollapsed?: boolean;
@@ -43,8 +41,6 @@ interface MailProps {
 }
 
 export function Mail({
-  accounts,
-  mails,
   defaultLayout = [20, 80, 80],
   defaultCollapsed = false,
   navCollapsedSize,
@@ -57,6 +53,28 @@ export function Mail({
   const toggleHideMailList = () => {
     setHideMailList((prev) => !prev);
   };
+
+  const [messages, setMessages] = React.useState<Message[]>();
+
+  const queryClient = useQueryClient();
+
+  React.useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["user-message"] });
+  }, [queryClient]);
+
+  const { data, isLoading, error, refetch } = useQuery<ApiResponse>({
+    queryKey: ["user-messages"],
+    queryFn: () => fetchItems("messages/user-messages"),
+    retry: 1,
+    enabled: !messages,
+  });
+
+  React.useEffect(() => {
+    if (data?.success && data?.data?.messages) {
+      console.log(data, "messages");
+      setMessages(data.data.messages);
+    }
+  }, [data]);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -98,22 +116,20 @@ export function Mail({
               "flex h-[52px] items-center justify-center",
               isCollapsed ? "h-[52px]" : "px-2"
             )}
-          >
-            <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
-          </div>
+          ></div>
           <Separator />
           <Nav
             isCollapsed={isCollapsed}
             links={[
               {
                 title: "Inbox",
-                label: "128",
+                label: "10",
                 icon: Inbox,
                 variant: "default",
               },
               {
                 title: "Drafts",
-                label: "9",
+                label: "0",
                 icon: File,
                 variant: "ghost",
               },
@@ -125,7 +141,7 @@ export function Mail({
               },
               {
                 title: "Junk",
-                label: "23",
+                label: "0",
                 icon: ArchiveX,
                 variant: "ghost",
               },
@@ -149,31 +165,31 @@ export function Mail({
             links={[
               {
                 title: "Social",
-                label: "972",
+                label: "0",
                 icon: Users2,
                 variant: "ghost",
               },
               {
                 title: "Updates",
-                label: "342",
+                label: "0",
                 icon: AlertCircle,
                 variant: "ghost",
               },
               {
                 title: "Forums",
-                label: "128",
+                label: "0",
                 icon: MessagesSquare,
                 variant: "ghost",
               },
               {
                 title: "Shopping",
-                label: "8",
+                label: "0",
                 icon: ShoppingCart,
                 variant: "ghost",
               },
               {
                 title: "Promotions",
-                label: "21",
+                label: "0",
                 icon: Archive,
                 variant: "ghost",
               },
@@ -218,15 +234,40 @@ export function Mail({
                   </div>
                 </form>
               </div>
-              <TabsContent value="all" className="m-0">
-                <MailList showMailContent={toggleHideMailList} items={mails} />
-              </TabsContent>
-              <TabsContent value="unread" className="m-0">
-                <MailList
-                  showMailContent={toggleHideMailList}
-                  items={mails.filter((item) => !item.read)}
-                />
-              </TabsContent>
+
+              {isLoading ? (
+                <>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-4 p-4"
+                    >
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-[250px]" />
+                        <Skeleton className="h-4 w-[200px]" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ) : error ? (
+                <Error message={"Something went wrong"} onRetry={refetch} />
+              ) : (
+                <>
+                  <TabsContent value="all" className="m-0">
+                    <MailList
+                      showMailContent={toggleHideMailList}
+                      items={messages ?? []}
+                    />
+                  </TabsContent>
+                  <TabsContent value="unread" className="m-0">
+                    <MailList
+                      showMailContent={toggleHideMailList}
+                      items={(messages ?? []).filter((item) => !item.isRead)}
+                    />
+                  </TabsContent>
+                </>
+              )}
             </Tabs>
           </ResizablePanel>
         )}
@@ -239,7 +280,10 @@ export function Mail({
         {isHideMailList && (
           <ResizablePanel defaultSize={defaultLayout[2]} minSize={30}>
             <MailDisplay
-              mail={mails.find((item) => item.id === mail.selected) || null}
+              mail={
+                (messages ?? []).find((item) => item._id === mail.selected) ||
+                null
+              }
               hideMailList={toggleHideMailList}
             />
           </ResizablePanel>

@@ -34,10 +34,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { type Mail } from "../data";
+import { Message } from "@/utils/interface";
 
 interface MailDisplayProps {
-  mail: Mail | null;
+  mail: Message | null | undefined;
   hideMailList: () => void;
 }
 
@@ -196,31 +196,34 @@ export function MailDisplay({ mail, hideMailList }: MailDisplayProps) {
           <div className="flex items-start p-4">
             <div className="flex items-start gap-4 text-sm">
               <Avatar>
-                <AvatarImage alt={mail.name} />
+                <AvatarImage alt={mail.sender.first_name} />
                 <AvatarFallback>
-                  {mail.name
+                  {mail.sender.first_name
                     .split(" ")
                     .map((chunk) => chunk[0])
                     .join("")}
                 </AvatarFallback>
               </Avatar>
               <div className="grid gap-1">
-                <div className="font-semibold">{mail.name}</div>
+                <div className="font-semibold">
+                  {mail.sender.first_name} {mail.sender.last_name}
+                </div>
                 <div className="line-clamp-1 text-xs">{mail.subject}</div>
                 <div className="line-clamp-1 text-xs">
-                  <span className="font-medium">Reply-To:</span> {mail.email}
+                  <span className="font-medium">Reply-To:</span>{" "}
+                  {mail.sender.first_name}
                 </div>
               </div>
             </div>
-            {mail.date && (
+            {mail.created_at && (
               <div className="ml-auto text-xs text-muted-foreground">
-                {format(new Date(mail.date), "PPpp")}
+                {format(new Date(mail.created_at), "PPpp")}
               </div>
             )}
           </div>
           <Separator />
           <div className="flex-1 whitespace-pre-wrap p-4 text-sm">
-            {mail.text}
+            {mail.content}
           </div>
           <Separator className="mt-auto" />
           <div className="p-4">
@@ -228,7 +231,7 @@ export function MailDisplay({ mail, hideMailList }: MailDisplayProps) {
               <div className="grid gap-4">
                 <Textarea
                   className="p-4"
-                  placeholder={`Reply ${mail.name}...`}
+                  placeholder={`Reply ${mail.sender.first_name} ${mail.sender.last_name}...`}
                 />
                 <div className="flex items-center">
                   <Label

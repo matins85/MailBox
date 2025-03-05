@@ -123,7 +123,7 @@ export function Mail({
             links={[
               {
                 title: "Inbox",
-                label: "10",
+                label: "4",
                 icon: Inbox,
                 variant: "default",
               },

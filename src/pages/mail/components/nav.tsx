@@ -1,6 +1,3 @@
-import { LucideIcon } from "lucide-react";
-import { Link } from "react-router-dom";
-
 import { buttonVariants } from "@/components/ui/button";
 import {
   Tooltip,
@@ -8,18 +5,24 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface NavProps {
   isCollapsed: boolean;
   links: {
     title: string;
-    label?: string;
+    label?: string | number;
     icon: LucideIcon;
     variant: "default" | "ghost";
   }[];
+  toggleNavtype: (navType: string) => void;
 }
 
-export function Nav({ links, isCollapsed }: NavProps) {
+export function Nav({ links, isCollapsed, toggleNavtype }: NavProps) {
+  const [activeNav, setActiveNav] = useState<string>("inbox");
+
   return (
     <div
       data-collapsed={isCollapsed}
@@ -33,9 +36,15 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 <Link
                   to="#"
                   className={cn(
-                    buttonVariants({ variant: link.variant, size: "icon" }),
+                    buttonVariants({
+                      variant:
+                        activeNav === link.title.toLowerCase()
+                          ? "default"
+                          : "ghost",
+                      size: "icon",
+                    }),
                     "h-9 w-9",
-                    link.variant === "default" &&
+                    activeNav === link.title.toLowerCase() &&
                       "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                   )}
                 >
@@ -57,25 +66,42 @@ export function Nav({ links, isCollapsed }: NavProps) {
               key={index}
               to="#"
               className={cn(
-                buttonVariants({ variant: link.variant, size: "sm" }),
-                link.variant === "default" &&
-                  "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
-                "justify-start"
+                buttonVariants({
+                  variant:
+                    activeNav === link.title.toLowerCase()
+                      ? "default"
+                      : "ghost",
+                  size: "sm",
+                }),
+                activeNav === link.title.toLowerCase() &&
+                  "dark:bg-muted py-5 dark:text-white dark:hover:bg-muted dark:hover:text-white",
+                "justify-start py-5"
               )}
+              onClick={() => {
+                setActiveNav(link.title.toLowerCase());
+                toggleNavtype(link.title.toLowerCase());
+              }}
             >
-              <link.icon className="mr-2 h-4 w-4" />
-              {link.title}
-              {link.label && (
-                <span
-                  className={cn(
-                    "ml-auto",
-                    link.variant === "default" &&
-                      "text-background dark:text-white"
+              <div className="flex justify-between items-center gap-x-1 w-full">
+                <div className="flex justify-between items-center gap-x-1">
+                  <link.icon className="mr-2 h-4 w-4" />
+                  {link.title}
+                </div>
+                {/*  */}
+                <div>
+                  {link.label && (
+                    <span
+                      className={cn(
+                        "ml-auto",
+                        activeNav === link.title.toLowerCase() &&
+                          "text-background dark:text-white"
+                      )}
+                    >
+                      {link.label}
+                    </span>
                   )}
-                >
-                  {link.label}
-                </span>
-              )}
+                </div>
+              </div>
             </Link>
           )
         )}

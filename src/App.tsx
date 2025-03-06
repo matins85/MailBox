@@ -6,9 +6,9 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
-import Loading from "./components/Loading";
 import { setAuthToken } from "./utils/storage";
 import { homeRoute, mailRoute } from "./utils/label";
+import Loading from "./components/Loading";
 
 const Home = lazy(() => import("./pages/home/page"));
 const Mail = lazy(() => import("./pages/mail/page"));

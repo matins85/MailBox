@@ -1,7 +1,7 @@
 import axios from "axios";
 import { clearAuthToken, getAuthToken, isLoggedIn } from "./storage";
 
-const API_BASE_URL = "https://mbl-test-api.onrender.com/v1/";
+const API_BASE_URL = "https://mbl-api.onrender.com/v1/";
 
 const api = axios.create({
   baseURL: API_BASE_URL,

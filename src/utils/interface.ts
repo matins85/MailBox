@@ -1,9 +1,24 @@
+export interface messageTypeStat {
+  archive: number;
+  draft: number;
+  forums: number;
+  inbox: number;
+  junk: number;
+  promotions: number;
+  sent: number;
+  shopping: number;
+  social: number;
+  trash: number;
+  updates: number;
+}
+
 export interface User {
   _id: string;
   first_name: string;
   last_name: string;
   messagesCount: number;
   unReadCount: number;
+  messageTypeStats: messageTypeStat;
 }
 
 export interface Sender {
@@ -31,5 +46,6 @@ export interface ApiResponse {
     messages: Message[];
     messagesCount: number;
     unReadCount: number;
+    messageTypeStats: messageTypeStat;
   };
 }

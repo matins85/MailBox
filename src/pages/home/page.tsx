@@ -2,7 +2,7 @@ import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import { ModeToggle } from "@/components/mode-toggle";
 import { fetchItems } from "@/utils/api";
-import { ApiResponse } from "@/utils/interface";
+import { ApiResponse, messageTypeStat } from "@/utils/interface";
 import { mailRoute } from "@/utils/label";
 import { getStorageUser, setStorageUser } from "@/utils/storage";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ type UserType = {
   last_name: string;
   messagesCount: number;
   unReadCount: number;
+  messageTypeStats: messageTypeStat;
 } | null;
 
 export default function HomePage() {
@@ -31,14 +32,22 @@ export default function HomePage() {
   useEffect(() => {
     if (data?.success && data?.data?.user) {
       const { _id, first_name, last_name } = data.data.user;
-      const { messagesCount, unReadCount } = data.data;
-      setUser({ _id, first_name, last_name, messagesCount, unReadCount });
+      const { messagesCount, unReadCount, messageTypeStats } = data.data;
+      setUser({
+        _id,
+        first_name,
+        last_name,
+        messagesCount,
+        unReadCount,
+        messageTypeStats,
+      });
       setStorageUser({
         _id,
         first_name,
         last_name,
         messagesCount,
         unReadCount,
+        messageTypeStats,
       });
     }
   }, [data]);

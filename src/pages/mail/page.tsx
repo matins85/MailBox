@@ -4,7 +4,7 @@ export default function MailPage() {
   return (
     <div>
       <Mail
-        defaultLayout={[20, 80, 80]}
+        defaultLayout={[20, 30, 50]}
         defaultCollapsed={false}
         navCollapsedSize={4}
       />

@@ -18,7 +18,7 @@ export interface User {
   last_name: string;
   messagesCount: number;
   unReadCount: number;
-  messageTypeStats: messageTypeStat;
+  messageTypeStats?: messageTypeStat;
 }
 
 export interface Sender {

@@ -12,8 +12,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
 import { fetchItems } from "@/utils/api";
-import { ApiResponse, Message, messageTypeStat } from "@/utils/interface";
-import { getStorageUser } from "@/utils/storage";
+import { ApiResponse, Message, messageTypeStat, User } from "@/utils/interface";
+import { getStorageUser, setStorageUser } from "@/utils/storage";
 import { useQuery } from "@tanstack/react-query";
 import {
   Archive,
@@ -104,12 +104,14 @@ export function Mail({
   };
 
   const updateStats = (stats?: messageTypeStat) => {
-    const storedUser = getStorageUser();
+    const storedUser: User = getStorageUser();
 
     setStats((prev) => ({
       ...prev,
       ...(stats ? stats : storedUser.messageTypeStats),
     }));
+
+    setStorageUser({ ...storedUser, messageTypeStats: stats });
   };
 
   const moveMessageType = (

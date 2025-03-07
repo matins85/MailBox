@@ -41,7 +41,7 @@ export const createItem = async (url: string, newItem: unknown) => {
 };
 
 export const updateItem = async (url: string, updatedData: unknown) => {
-  const response = await api.put(url, updatedData);
+  const response = await api.patch(url, updatedData);
   return response.data;
 };
 

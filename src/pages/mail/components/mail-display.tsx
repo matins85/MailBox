@@ -6,16 +6,49 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Message } from "@/utils/interface";
+import { updateItem } from "@/utils/api";
+import { ApiResponse, Message } from "@/utils/interface";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Archive, ArchiveX, ChevronLeft, Trash2 } from "lucide-react";
+import React from "react";
+import { toast } from "sonner";
 
 interface MailDisplayProps {
   mail: Message | null | undefined;
   hideMailList: () => void;
+  updateMessageType: (prevMessageType: string, messageType: string) => void;
 }
 
-export function MailDisplay({ mail, hideMailList }: MailDisplayProps) {
+export function MailDisplay({
+  mail,
+  hideMailList,
+  updateMessageType,
+}: MailDisplayProps) {
+  const [messageType, setMessageType] = React.useState({
+    messageId: "",
+    recipient: "",
+    type: "",
+  });
+
+  const { data, isLoading, refetch } = useQuery<ApiResponse>({
+    queryKey: ["update-messages", messageType],
+    queryFn: () => updateItem("messages/update-message", messageType),
+    retry: 0,
+    enabled: false,
+    gcTime: 0,
+    staleTime: 0,
+  });
+
+  React.useEffect(() => {
+    if (data && data?.success) {
+      updateMessageType(mail?.type || "inbox", messageType.type || "inbox");
+      toast(`Successfully moved to ${messageType.type}`);
+    } else if (data && !data?.success) {
+      toast("Something went wrong, please try again");
+    }
+  }, [data]);
+
   return (
     <div className="flex h-full flex-col text-foreground">
       <div className="flex items-center p-2">
@@ -36,33 +69,84 @@ export function MailDisplay({ mail, hideMailList }: MailDisplayProps) {
           </Tooltip>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Archive className="h-4 w-4" />
-                <span className="sr-only">Archive</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Archive</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <ArchiveX className="h-4 w-4" />
-                <span className="sr-only">Move to junk</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to junk</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={!mail}>
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Move to trash</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to trash</TooltipContent>
-          </Tooltip>
+          {mail?.type !== "archive" && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => {
+                    setMessageType((prev) => ({
+                      ...prev,
+                      messageId: mail?._id || "",
+                      recipient: mail?.recipient || "",
+                      type: "archive",
+                    }));
+                    setTimeout(() => {
+                      refetch();
+                    }, 100);
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  disabled={!mail || isLoading}
+                >
+                  <Archive className="h-4 w-4" />
+                  <span className="sr-only">Archive</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Archive</TooltipContent>
+            </Tooltip>
+          )}
+          {mail?.type !== "junk" && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => {
+                    setMessageType((prev) => ({
+                      ...prev,
+                      messageId: mail?._id || "",
+                      recipient: mail?.recipient || "",
+                      type: "junk",
+                    }));
+                    setTimeout(() => {
+                      refetch();
+                    }, 100);
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  disabled={!mail || isLoading}
+                >
+                  <ArchiveX className="h-4 w-4" />
+                  <span className="sr-only">Move to junk</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Move to junk</TooltipContent>
+            </Tooltip>
+          )}
+          {mail?.type !== "trash" && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => {
+                    setMessageType((prev) => ({
+                      ...prev,
+                      messageId: mail?._id || "",
+                      recipient: mail?.recipient || "",
+                      type: "trash",
+                    }));
+                    setTimeout(() => {
+                      refetch();
+                    }, 100);
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  disabled={!mail || isLoading}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Move to trash</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Move to trash</TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </div>
       <Separator />

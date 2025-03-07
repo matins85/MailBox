@@ -25,6 +25,7 @@ import {
   Trash2,
 } from "lucide-react";
 import * as React from "react";
+import { useSearchParams } from "react-router-dom";
 import { useMail } from "../use-mail";
 import { MailDisplay } from "./mail-display";
 import { MailList } from "./mail-list";
@@ -41,10 +42,12 @@ export function Mail({
   defaultCollapsed = false,
   navCollapsedSize,
 }: MailProps) {
+  const [, setSearchParams] = useSearchParams();
+
   const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
   const [mail, setMail] = useMail();
   const [stats, setStats] = React.useState<messageTypeStat>(
-    getStorageUser().messageTypeStats
+    () => getStorageUser()?.messageTypeStats ?? { stats: {} }
   );
 
   const [isSmallScreen, setIsSmallScreen] = React.useState(
@@ -75,6 +78,8 @@ export function Mail({
     queryFn: () => fetchItems(`messages/user-messages?${getFilterParams()}`),
     retry: 1,
     enabled: !messages,
+    gcTime: 0,
+    staleTime: 0,
   });
 
   React.useEffect(() => {
@@ -105,6 +110,19 @@ export function Mail({
       ...prev,
       ...(stats ? stats : storedUser.messageTypeStats),
     }));
+  };
+
+  const moveMessageType = (
+    prevType: keyof messageTypeStat,
+    newType: keyof messageTypeStat
+  ) => {
+    updateStats({
+      ...stats,
+      [newType]: (stats[newType] || 0) + 1,
+      [prevType]: Math.max((stats[prevType] || 0) - 1, 0),
+    });
+
+    setSearchParams({ type: newType });
   };
 
   React.useEffect(() => {
@@ -173,7 +191,7 @@ export function Mail({
               },
               {
                 title: "Drafts",
-                label: stats?.draft || 0,
+                label: stats?.drafts || 0,
                 icon: File,
                 variant: "ghost",
               },
@@ -305,6 +323,12 @@ export function Mail({
               null
             }
             hideMailList={toggleHideMailList}
+            updateMessageType={(prevType, newType) =>
+              moveMessageType(
+                prevType as keyof messageTypeStat,
+                newType as keyof messageTypeStat
+              )
+            }
           />
         </ResizablePanel>
         {/*  */}

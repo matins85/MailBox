@@ -6,8 +6,8 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 
 interface NavProps {
   isCollapsed: boolean;
@@ -21,7 +21,17 @@ interface NavProps {
 }
 
 export function Nav({ links, isCollapsed, toggleNavtype }: NavProps) {
+  const [searchParams] = useSearchParams();
+  const queryType = searchParams.get("type");
+
   const [activeNav, setActiveNav] = useState<string>("inbox");
+
+  React.useEffect(() => {
+    if (queryType) {
+      setActiveNav(queryType);
+      toggleNavtype(queryType);
+    }
+  }, [queryType]);
 
   return (
     <div
@@ -64,7 +74,7 @@ export function Nav({ links, isCollapsed, toggleNavtype }: NavProps) {
           ) : (
             <Link
               key={index}
-              to="#"
+              to={`/mail?type=${link.title.toLowerCase()}`}
               className={cn(
                 buttonVariants({
                   variant:
@@ -77,10 +87,6 @@ export function Nav({ links, isCollapsed, toggleNavtype }: NavProps) {
                   "dark:bg-muted py-5 dark:text-white dark:hover:bg-muted dark:hover:text-white",
                 "justify-start py-5"
               )}
-              onClick={() => {
-                setActiveNav(link.title.toLowerCase());
-                toggleNavtype(link.title.toLowerCase());
-              }}
             >
               <div className="flex justify-between items-center gap-x-1 w-full">
                 <div className="flex justify-between items-center gap-x-1">

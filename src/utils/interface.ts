@@ -1,6 +1,6 @@
 export interface messageTypeStat {
   archive: number;
-  draft: number;
+  drafts: number;
   forums: number;
   inbox: number;
   junk: number;
@@ -37,6 +37,7 @@ export interface Message {
   isRead: boolean;
   created_at: string;
   updated_at: string;
+  type: string;
 }
 
 export interface ApiResponse {
